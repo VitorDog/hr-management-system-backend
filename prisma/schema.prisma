@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id                    Int          @id @default(autoincrement())
+  name                  String
+  email                 String       @unique
+  departmentId          Int?
+  phoneNumber           String?
+  address               String?
+  dateOfBirth           DateTime?
+  position              String?
+  hireDate              DateTime?
+  emergencyContact      String?
+  emergencyContactPhone String?
+  employmentType        String?      @default("Full-Time")
+  status                String?      @default("Active")
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  // Relations
+  department            Department?  @relation("DepartmentEmployees", fields: [departmentId], references: [id], onDelete: SetNull)
+  managedDepartments    Department[] @relation("DepartmentManager") // Changed to array for one-to-many
+  salaries              Salary[]
+  hiredCandidates       Candidate[]  @relation("CandidateEmployee")
+
+  @@map("employees")
+}
+
+model Department {
+  id          Int         @id @default(autoincrement())
+  name        String
+  location    String
+  budget      Float?
+  managerId   Int?        // Manager can manage multiple departments
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations - Changed to one-to-many
+  manager     Employee?   @relation("DepartmentManager", fields: [managerId], references: [id], onDelete: SetNull)
+  employees   Employee[]  @relation("DepartmentEmployees")
+  candidates  Candidate[]
+
+  @@map("departments")
+}
+
+model Candidate {
+  id                   Int          @id @default(autoincrement())
+  name                 String
+  email                String
+  phone                String
+  appliedPosition      String
+  appliedDepartmentId  Int?
+  resume               String?
+  status               String       @default("Applied")
+  applicationDate      DateTime     @default(now())
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+  hiredEmployeeId      Int?         // Reference to employee when candidate is hired
+
+  // Relations
+  department           Department?  @relation(fields: [appliedDepartmentId], references: [id], onDelete: SetNull)
+  hiredEmployee        Employee?    @relation("CandidateEmployee", fields: [hiredEmployeeId], references: [id], onDelete: SetNull)
+
+  @@map("candidates")
+}
+
+model Salary {
+  id               Int      @id @default(autoincrement())
+  employeeId       Int
+  baseAmount       Float
+  bonus            Float?   @default(0)
+  grossAmount      Float
+  taxDeductions    Float
+  netAmount        Float
+  paymentFrequency String
+  effectiveDate    DateTime
+  previousSalaryId Int?
+  adjustmentType   String?
+  notes            String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  employee         Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  previousSalary   Salary?  @relation("SalaryHistory", fields: [previousSalaryId], references: [id])
+  nextSalaries     Salary[] @relation("SalaryHistory")
+
+  @@map("salaries")
+}
