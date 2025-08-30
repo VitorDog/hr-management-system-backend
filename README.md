@@ -137,10 +137,10 @@ npm run start:dev
 The API will be available at http://localhost:3001
 
 ## 📊 Status
-https://img.shields.io/badge/build-passing-brightgreen
-https://img.shields.io/badge/uptime-100%2525-brightgreen
-https://img.shields.io/badge/API-live-success
 
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Uptime](https://img.shields.io/badge/uptime-100%25-brightgreen) 
+![API Status](https://img.shields.io/badge/API-live-success)
 
 ## 🙌 Author
 
