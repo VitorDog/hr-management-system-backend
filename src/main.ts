@@ -7,7 +7,7 @@ async function bootstrap() {
   
   // CORS so Netlify frontend can call the API
   app.enableCors({
-    origin: ['http://localhost:4200'],
+    origin: ['http://localhost:4200', 'https://office-hr-management.netlify.app'],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
